@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback, useState} from 'react';
 import {createRoot} from 'react-dom/client';
 
 import DeckGL from '@deck.gl/react';
@@ -96,6 +96,7 @@ export default function App({showBorder = false, onTilesLoad = null}) {
 
   return (
     <DeckGL
+      id="map"
       layers={[tileLayer]}
       views={new MapView({repeat: true})}
       initialViewState={INITIAL_VIEW_STATE}
@@ -112,6 +113,23 @@ export default function App({showBorder = false, onTilesLoad = null}) {
   );
 }
 
+const Root = () => {
+  const [showMap, setShowMap] = useState(true);
+
+  const toggleMapVisibility = useCallback(() => {
+    const newStyle = showMap ? 'none' : 'block';
+    document.getElementById('map')?.style.setProperty('display', newStyle);
+    setShowMap(!showMap);
+  }, [showMap]);
+
+  return (
+    <div>
+      <App />
+      <button style={{position: 'absolute'}} onClick={toggleMapVisibility}>Toggle Map</button>
+    </div>
+  );
+}
+
 export function renderToDOM(container) {
-  createRoot(container).render(<App />);
+  createRoot(container).render(<Root />);
 }
